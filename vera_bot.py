@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+
+app = FastAPI()
 from __future__ import annotations
 
 import argparse
