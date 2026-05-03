@@ -53,7 +53,7 @@ POSITIVE_PATTERNS = [
     "go ahead",
 ]
 NEGATIVE_PATTERNS = ["no", "not interested", "don't", "do not", "skip", "nah"]
-
+PROBLEM_PATTERNS = ["down", "low", "problem", "issue", "help", "decrease", "drop", "no customers", "slow", "less traffic", "no sales", "struggling", "bad", "worse", "empty"]
 
 @dataclass
 class ComposedMessage:
@@ -715,804 +715,298 @@ def render_homepage() -> str:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vera • Merchant Growth Copilot</title>
+  <title>Vera • Chat</title>
   <style>
     :root {
-      --bg: #0c111d;
-      --panel: rgba(16, 24, 40, 0.82);
-      --panel-strong: rgba(12, 18, 31, 0.94);
-      --line: rgba(148, 163, 184, 0.18);
-      --text: #edf2f7;
-      --muted: #9fb0c8;
-      --accent: #f97316;
-      --accent-soft: rgba(249, 115, 22, 0.14);
-      --accent-2: #22c55e;
-      --clinical: #38bdf8;
-      --care: #f472b6;
-      --energy: #f59e0b;
-      --focus: #34d399;
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-      --radius: 26px;
+      --bg: #212121;
+      --sidebar-bg: #171717;
+      --text: #ececec;
+      --text-muted: #b4b4b4;
+      --border: #333333;
+      --bubble-user: #2f2f2f;
+      --bubble-bot: transparent;
+      --input-bg: #2f2f2f;
+      --accent: #10a37f;
+      --accent-hover: #1a7f64;
     }
     body[data-theme="light"] {
-      --bg: #f4f7fb;
-      --panel: rgba(255, 255, 255, 0.82);
-      --panel-strong: rgba(255, 255, 255, 0.96);
-      --line: rgba(71, 85, 105, 0.14);
-      --text: #0f172a;
-      --muted: #52637a;
-      --accent-soft: rgba(249, 115, 22, 0.10);
-      --shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+      --bg: #ffffff;
+      --sidebar-bg: #f9f9f9;
+      --text: #0d0d0d;
+      --text-muted: #5e5e5e;
+      --border: #e5e5e5;
+      --bubble-user: #f4f4f4;
+      --bubble-bot: transparent;
+      --input-bg: #ffffff;
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0;
-      min-height: 100vh;
+      margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       color: var(--text);
-      font-family: "Satoshi", "Avenir Next", "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
-        radial-gradient(circle at top right, rgba(249, 115, 22, 0.20), transparent 30%),
-        linear-gradient(160deg, #08101b 0%, #0f172a 45%, #111827 100%);
-    }
-    body[data-theme="light"] {
-      background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.10), transparent 28%),
-        radial-gradient(circle at top right, rgba(249, 115, 22, 0.14), transparent 30%),
-        linear-gradient(160deg, #f8fafc 0%, #eff6ff 45%, #eef2ff 100%);
-    }
-    .shell {
-      width: min(1440px, calc(100vw - 32px));
-      margin: 16px auto;
-      border: 1px solid var(--line);
-      border-radius: 34px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      box-shadow: var(--shadow);
+      background: var(--bg);
+      display: flex;
+      height: 100vh;
       overflow: hidden;
-      backdrop-filter: blur(20px);
     }
-    .topbar {
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      transition: width 0.3s;
+    }
+    .sidebar-header {
+      padding: 20px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
       justify-content: space-between;
-      gap: 24px;
-      padding: 18px 24px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(7, 13, 24, 0.58);
-    }
-    .brand {
-      display: flex;
       align-items: center;
-      gap: 14px;
     }
-    .brand-mark {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #fb923c, #f97316 48%, #facc15);
-      display: grid;
-      place-items: center;
-      color: white;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      box-shadow: 0 10px 28px rgba(249, 115, 22, 0.35);
+    .sidebar-footer {
+      padding: 15px 20px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      line-height: 1.5;
     }
-    .brand-copy h1 {
-      margin: 0;
-      font-size: 1rem;
-      line-height: 1.1;
-      letter-spacing: 0.02em;
-    }
-    .brand-copy p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 0.87rem;
-    }
-    .status-row {
+    .view-toggles {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: flex-end;
+      padding: 10px;
+      gap: 5px;
     }
-    .pill {
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.03);
-      color: var(--muted);
-      font-size: 0.8rem;
-      white-space: nowrap;
-    }
-    .theme-toggle {
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.03);
-      color: var(--text);
+    .view-toggles button {
+      flex: 1;
+      padding: 8px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 8px;
       cursor: pointer;
-      font: inherit;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
     }
-    .layout {
-      display: grid;
-      grid-template-columns: 330px minmax(0, 1fr) 310px;
-      min-height: calc(100vh - 120px);
+    .view-toggles button.active {
+      background: var(--bubble-user);
+      color: var(--text);
+      border-color: var(--text-muted);
     }
-    .chat-stage {
-      padding: 22px;
-      display: grid;
-      place-items: center;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(251, 146, 60, 0.10), transparent 30%),
-        linear-gradient(180deg, rgba(3,7,18,0.4), rgba(3,7,18,0.04));
-      border-bottom: 1px solid var(--line);
+    .scenario-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
     }
-    .phone {
-      width: min(430px, 100%);
-      border-radius: 34px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: linear-gradient(180deg, rgba(2,6,23,0.94), rgba(15,23,42,0.94));
-      box-shadow: 0 28px 80px rgba(0,0,0,0.38);
-      overflow: hidden;
+    .scenario-item {
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text);
+      text-align: left;
+      background: transparent;
+      border: none;
+      transition: background 0.2s;
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .scenario-item:hover, .scenario-item.active {
+      background: var(--bubble-user);
+    }
+    .scenario-item .title { font-weight: 500; }
+    .scenario-item .desc { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .main-chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       position: relative;
-      animation: phoneLift 620ms ease both;
-      transform-origin: center bottom;
     }
-    .phone::before {
-      content: "";
+    .top-nav {
       position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 120px;
-      height: 24px;
-      border-radius: 999px;
-      background: rgba(0,0,0,0.42);
-      z-index: 3;
-    }
-    .phone-head {
-      padding: 42px 18px 14px;
-      background: linear-gradient(180deg, rgba(249,115,22,0.22), rgba(255,255,255,0.02));
-      border-bottom: 1px solid var(--line);
+      top: 0; left: 0; right: 0;
+      padding: 16px 24px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      z-index: 10;
+      background: linear-gradient(to bottom, var(--bg) 60%, transparent);
     }
-    .phone-profile {
+    .top-nav h2 { margin: 0 0 4px 0; font-size: 1.1rem; font-weight: 500;}
+    .top-nav span { font-size: 0.85rem; color: var(--text-muted); }
+    .theme-toggle {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      height: fit-content;
+    }
+    .messages-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      padding: 80px 0 160px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 12px;
+      scroll-behavior: smooth;
+    }
+    .message-row {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 24px 20px;
+    }
+    .message-content {
+      width: 100%;
+      max-width: 768px;
+      display: flex;
+      gap: 16px;
+      justify-content: flex-start;
     }
     .avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #fb923c, #f97316);
-      color: white;
-      font-weight: 700;
-      box-shadow: 0 10px 28px rgba(249, 115, 22, 0.35);
+      width: 30px; height: 30px;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 0.9rem; flex-shrink: 0;
     }
-    .phone-profile strong {
-      display: block;
-      font-size: 0.92rem;
-      margin-bottom: 2px;
-    }
-    .phone-profile span {
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-    .phone-badge {
-      font-size: 0.74rem;
-      color: #d9e4f2;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-    }
-    .sidebar, .insights {
-      padding: 24px;
-      border-right: 1px solid var(--line);
-      background: rgba(6, 11, 21, 0.44);
-    }
-    .insights {
-      border-right: 0;
-      border-left: 1px solid var(--line);
-    }
-    .section-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-    .section-title h2, .chat-title h2 {
-      margin: 0;
-      font-size: 0.98rem;
-      letter-spacing: 0.01em;
-    }
-    .section-title span, .chat-title span {
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-    .hero {
-      padding: 18px;
-      border-radius: 24px;
-      border: 1px solid rgba(249, 115, 22, 0.24);
-      background: linear-gradient(180deg, rgba(249,115,22,0.14), rgba(255,255,255,0.03));
-      margin-bottom: 20px;
-      animation: fadeUp 520ms ease both;
-      animation-delay: 80ms;
-    }
-    .hero h3 {
-      margin: 0 0 10px;
-      font-size: 1.5rem;
-      line-height: 1.05;
-    }
-    .hero p {
-      margin: 0;
-      color: #dbe7f5;
-      font-size: 0.92rem;
+    .user .avatar { display: none; }
+    .bot .avatar { background: var(--accent); color: white; border-radius: 50%; }
+    .bubble-wrap {
+      flex: 1;
       line-height: 1.6;
-    }
-    .metric-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 16px;
-    }
-    .metric {
-      padding: 12px;
-      border-radius: 18px;
-      background: rgba(6, 11, 21, 0.44);
-      border: 1px solid var(--line);
-    }
-    .metric b { display: block; font-size: 1.15rem; margin-bottom: 4px; }
-    .metric small { color: var(--muted); }
-    .scenario-list {
-      display: grid;
-      gap: 12px;
-    }
-    .scenario {
-      width: 100%;
-      text-align: left;
-      padding: 16px;
-      border-radius: 22px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.02);
-      color: var(--text);
-      cursor: pointer;
-      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
-      animation: fadeUp 440ms ease both;
-    }
-    .scenario:hover, .scenario.active {
-      transform: translateY(-4px) scale(1.01);
-      border-color: rgba(255,255,255,0.22);
-      background: rgba(255,255,255,0.06);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
-    }
-    .scenario .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-    .scenario-head {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    .scenario-avatar {
-      width: 38px;
-      height: 38px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, rgba(251,146,60,0.24), rgba(56,189,248,0.24));
-      border: 1px solid var(--line);
-      font-size: 0.85rem;
-      font-weight: 700;
-    }
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-    .accent-clinical { background: var(--clinical); }
-    .accent-care { background: var(--care); }
-    .accent-energy { background: var(--energy); }
-    .accent-focus { background: var(--focus); }
-    .scenario strong {
-      display: block;
       font-size: 1rem;
-      margin-bottom: 8px;
+      color: var(--text);
     }
-    .scenario p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.5;
-      font-size: 0.86rem;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
-      overflow: hidden;
+    .user .message-content {
+      flex-direction: row-reverse;
     }
-    .chat-wrap {
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      background:
-        radial-gradient(circle at top, rgba(56, 189, 248, 0.08), transparent 32%),
-        linear-gradient(180deg, rgba(3,7,18,0.65), rgba(3,7,18,0.88));
-    }
-    .chat-head {
-      padding: 24px 24px 18px;
-      border-bottom: 1px solid var(--line);
-    }
-    .chat-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 10px;
-    }
-    .headline {
-      display: grid;
-      gap: 8px;
-    }
-    .headline h3 {
-      margin: 0;
-      font-size: 1.45rem;
-    }
-    .headline p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.93rem;
-      line-height: 1.5;
-      max-width: 700px;
-    }
-    .stack {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .tag {
-      padding: 10px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
-    .messages {
-      padding: 24px;
-      display: grid;
-      gap: 16px;
-      align-content: start;
-      overflow: auto;
-      min-height: 420px;
-      max-height: calc(100vh - 330px);
-    }
-    .message {
-      max-width: 82%;
-      padding: 16px 18px;
-      border-radius: 24px;
-      line-height: 1.65;
-      font-size: 0.96rem;
-      position: relative;
-      box-shadow: 0 12px 24px rgba(0,0,0,0.18);
-      animation: rise 220ms ease;
-    }
-    .message small {
-      display: block;
-      margin-top: 10px;
-      color: rgba(255,255,255,0.64);
-      font-size: 0.75rem;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-    }
-    .bot {
-      background: linear-gradient(180deg, rgba(249,115,22,0.22), rgba(255,255,255,0.04));
-      border: 1px solid rgba(249,115,22,0.24);
-      justify-self: start;
-    }
-    .user {
-      background: rgba(56, 189, 248, 0.14);
-      border: 1px solid rgba(56, 189, 248, 0.22);
-      justify-self: end;
-    }
-    .composer {
-      padding: 18px 24px 24px;
-      border-top: 1px solid var(--line);
-      background: rgba(7, 11, 21, 0.92);
-    }
-    .typing {
-      justify-self: start;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 14px 16px;
+    .user .bubble-wrap {
+      background: var(--bubble-user);
+      padding: 12px 20px;
       border-radius: 20px;
-      border: 1px solid rgba(249,115,22,0.24);
-      background: rgba(249,115,22,0.12);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+      max-width: 70%;
+      margin-left: auto;
+      flex: none;
     }
-    .typing span {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #f7c9a3;
-      animation: blink 1s infinite ease-in-out;
+    .bot .bubble-wrap {
+      max-width: 100%;
+      padding-top: 4px;
     }
-    .typing span:nth-child(2) { animation-delay: 120ms; }
-    .typing span:nth-child(3) { animation-delay: 240ms; }
-    .chips {
+    .input-wrapper {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, var(--bg) 70%, transparent);
+      padding: 20px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 14px;
+      flex-direction: column;
+      align-items: center;
+    }
+    .chips {
+      display: flex; gap: 8px; margin-bottom: 12px; max-width: 768px; width: 100%; flex-wrap: wrap; justify-content: center;
     }
     .chip {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.03);
-      color: var(--text);
-      padding: 10px 14px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-size: 0.84rem;
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); padding: 8px 14px; border-radius: 16px;
+      cursor: pointer; font-size: 0.85rem; transition: background 0.2s;
     }
-    .compose-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
+    .chip:hover { background: var(--bubble-user); }
+    .input-box {
+      width: 100%; max-width: 768px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: flex-end;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
     textarea {
-      width: 100%;
-      resize: none;
-      min-height: 58px;
-      max-height: 140px;
-      border-radius: 20px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.03);
-      color: var(--text);
-      padding: 16px 18px;
-      font: inherit;
-      outline: none;
-    }
-    textarea::placeholder { color: #7f91a9; }
-    .send {
-      border: 0;
-      border-radius: 18px;
-      padding: 0 18px;
-      min-width: 124px;
-      font: inherit;
-      font-weight: 700;
-      color: white;
-      background: linear-gradient(135deg, #fb923c, #f97316 60%, #ea580c);
-      cursor: pointer;
-      box-shadow: 0 14px 28px rgba(249, 115, 22, 0.28);
-    }
-    .insight-card {
-      padding: 18px;
-      border-radius: 22px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--line);
-      margin-bottom: 14px;
-    }
-    .insight-card h4 {
-      margin: 0 0 10px;
-      font-size: 0.95rem;
-    }
-    .insight-card p, .insight-card li {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.87rem;
-      line-height: 1.55;
-    }
-    .insight-card ul {
-      padding-left: 18px;
-      margin: 0;
-    }
-    .context-grid {
-      display: grid;
-      gap: 14px;
-      margin-top: 12px;
-    }
-    .context-box {
-      padding: 14px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.03);
-    }
-    .context-box h5 {
-      margin: 0 0 8px;
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-    }
-    .context-box pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-size: 0.78rem;
-      line-height: 1.55;
-      color: var(--text);
-      font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
-    }
-    .rail {
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.06);
-      overflow: hidden;
-      margin-top: 10px;
-    }
-    .rail > span {
-      display: block;
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #38bdf8, #f97316);
-    }
-    .footer-note {
-      color: var(--muted);
-      font-size: 0.78rem;
-      line-height: 1.5;
-      margin-top: 14px;
-    }
-    .drawer {
-      margin-top: 18px;
-      border-radius: 22px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.03);
-      overflow: hidden;
-    }
-    .drawer-head {
-      width: 100%;
-      border: 0;
-      background: rgba(255,255,255,0.02);
-      color: var(--text);
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font: inherit;
-      cursor: pointer;
-    }
-    .drawer pre {
-      margin: 0;
-      padding: 16px;
-      color: #d7e3f4;
-      font-size: 0.78rem;
-      line-height: 1.6;
-      overflow: auto;
-      max-height: 360px;
-      background: rgba(2,6,23,0.42);
-    }
-    .drawer-copy {
-      padding: 0 16px 16px;
-    }
-    .copy-btn {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.03);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 14px;
-      cursor: pointer;
-      font: inherit;
-      font-size: 0.82rem;
-    }
-    .view-toggle {
-      display: inline-flex;
-      gap: 8px;
-      padding: 6px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.03);
-      margin-top: 14px;
-    }
-    .view-toggle button {
-      border: 0;
+      flex: 1;
       background: transparent;
-      color: var(--muted);
-      padding: 10px 14px;
-      border-radius: 999px;
+      border: none; color: var(--text);
+      font-family: inherit; font-size: 1rem;
+      resize: none; outline: none;
+      max-height: 200px; min-height: 24px;
+      padding: 4px 0;
+      line-height: 1.5;
+    }
+    .send-btn {
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
       cursor: pointer;
-      font: inherit;
-      font-size: 0.82rem;
+      margin-left: 12px;
+      transition: opacity 0.2s;
     }
-    .view-toggle button.active {
-      background: rgba(249,115,22,0.18);
-      color: var(--text);
-    }
-    .hidden-by-view {
-      display: none !important;
-    }
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes phoneLift {
-      from { opacity: 0; transform: translateY(30px) scale(0.96); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    @keyframes blink {
-      0%, 80%, 100% { transform: scale(0.7); opacity: 0.45; }
-      40% { transform: scale(1); opacity: 1; }
-    }
-    @media (max-width: 1180px) {
-      .layout { grid-template-columns: 300px 1fr; }
-      .insights { display: none; }
-    }
-    @media (max-width: 860px) {
-      .shell { width: calc(100vw - 16px); margin: 8px auto; border-radius: 26px; }
-      .layout { grid-template-columns: 1fr; }
-      .sidebar { border-right: 0; border-bottom: 1px solid var(--line); }
-      .messages { max-height: none; min-height: 320px; }
-      .compose-row { grid-template-columns: 1fr; }
-      .send { min-height: 54px; }
-      .message { max-width: 100%; }
-      .topbar { flex-direction: column; align-items: flex-start; }
-      .status-row { justify-content: flex-start; }
-    }
+    .send-btn:hover { opacity: 0.8; }
+    .send-btn svg { width: 16px; height: 16px; fill: currentColor; }
+    .typing { display: flex; gap: 4px; align-items: center; height: 24px; }
+    .typing span { width: 6px; height: 6px; background: var(--text-muted); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+    .typing span:nth-child(1) { animation-delay: -0.32s; }
+    .typing span:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+    .hidden-by-view { display: none !important; }
+    .payload-drawer { max-width: 768px; width: 100%; margin-top: 8px; }
+    .drawer-toggle { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; }
+    .drawer-content { background: var(--bubble-user); padding: 12px; border-radius: 8px; margin-top: 8px; font-size: 0.8rem; overflow-x: auto; }
+    .drawer-content pre { margin: 0; color: var(--text); }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <div class="topbar">
-      <div class="brand">
-        <div class="brand-mark">V</div>
-        <div class="brand-copy">
-          <h1>Vera Message Engine</h1>
-          <p>Deterministic merchant growth copilot for listings, campaigns, and reply flows.</p>
-        </div>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      Vera Copilot
+    </div>
+    <div class="view-toggles">
+      <button id="merchantViewBtn" class="active" type="button">Merchant</button>
+      <button id="customerViewBtn" type="button">Customer</button>
+    </div>
+    <div class="scenario-list" id="scenarioList"></div>
+    <div class="sidebar-footer">
+      Developer: Ashish Rokade<br>
+      &copy; All rights reserved.
+    </div>
+  </aside>
+
+  <main class="main-chat">
+    <div class="top-nav">
+      <div>
+        <h2 id="scenarioTitle">Select a scenario</h2>
+        <span id="scenarioSubtitle"></span>
       </div>
-      <div class="status-row">
-        <div class="pill">Deterministic compose()</div>
-        <div class="pill">Judge-ready API surface</div>
-        <div class="pill">Modern demo chat UI</div>
-        <button class="theme-toggle" id="themeToggle" type="button">Light Mode</button>
+      <button class="theme-toggle" id="themeToggle">Light Mode</button>
+    </div>
+
+    <div class="messages-wrapper" id="messages">
+      <!-- Messages -->
+    </div>
+
+    <div class="input-wrapper">
+      <div class="chips" id="chips"></div>
+      <div class="input-box">
+        <textarea id="replyBox" placeholder="Message Vera..." rows="1"></textarea>
+        <button class="send-btn" id="sendBtn">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+      <div class="payload-drawer">
+         <button class="drawer-toggle" id="drawerToggle">Debug Payload <span id="drawerState">▼</span></button>
+         <div class="drawer-content" id="drawerBody" hidden>
+           <pre id="rawPayload">{}</pre>
+         </div>
       </div>
     </div>
-    <div class="layout">
-      <aside class="sidebar">
-        <div class="hero">
-          <h3>Sharper outreach, grounded in merchant context.</h3>
-          <p>Preview how Vera picks the right message, tone, CTA, and rationale from category, merchant, trigger, and customer context.</p>
-          <div class="metric-grid">
-            <div class="metric"><b>5</b><small>verticals</small></div>
-            <div class="metric"><b>25+</b><small>seed triggers</small></div>
-            <div class="metric"><b>Stateful</b><small>reply routing</small></div>
-            <div class="metric"><b>Fast</b><small>HTTP demo</small></div>
-          </div>
-        </div>
-        <div class="section-title">
-          <h2>Demo Scenarios</h2>
-          <span>Tap to load</span>
-        </div>
-        <div class="scenario-list" id="scenarioList"></div>
-      </aside>
-      <main class="chat-wrap">
-        <div class="chat-head">
-          <div class="chat-title">
-            <h2>Live Preview</h2>
-            <span id="engineLabel">Vera</span>
-          </div>
-          <div class="headline">
-            <h3 id="scenarioTitle">Choose a scenario</h3>
-            <p id="scenarioSubtitle">The message preview will appear here with the same deterministic logic used by the API endpoints.</p>
-          </div>
-          <div class="stack" id="metaTags"></div>
-          <div class="view-toggle">
-            <button id="merchantViewBtn" class="active" type="button">Merchant View</button>
-            <button id="customerViewBtn" type="button">Customer View</button>
-          </div>
-        </div>
-        <div class="chat-stage">
-          <div class="phone">
-            <div class="phone-head">
-              <div class="phone-profile">
-                <div class="avatar">V</div>
-                <div>
-                  <strong>Vera</strong>
-                  <span>merchant growth assistant</span>
-                </div>
-              </div>
-              <div class="phone-badge" id="phoneBadge">live demo</div>
-            </div>
-            <div class="messages" id="messages">
-              <div class="message bot">
-                Pick a scenario from the left to watch Vera compose the next best message.
-                <small>vera</small>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="composer">
-          <div class="chips" id="chips"></div>
-          <div class="compose-row">
-            <textarea id="replyBox" placeholder="Type a merchant or customer reply to continue the flow..."></textarea>
-            <button class="send" id="sendBtn">Send Reply</button>
-          </div>
-          <div class="drawer">
-            <button class="drawer-head" id="drawerToggle" type="button">
-              <span>Deterministic Payload</span>
-              <span id="drawerState">show</span>
-            </button>
-            <div id="drawerBody" hidden>
-              <pre id="rawPayload">{}</pre>
-              <div class="drawer-copy">
-                <button class="copy-btn" id="copyPayload" type="button">Copy JSON</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-      <aside class="insights">
-        <div class="section-title">
-          <h2>Why It Works</h2>
-          <span>Scoring lens</span>
-        </div>
-        <div class="insight-card">
-          <h4>Decision Quality</h4>
-          <p>Vera ranks active triggers first, then chooses the single signal most worth messaging on now.</p>
-          <div class="rail"><span style="width:84%"></span></div>
-        </div>
-        <div class="insight-card">
-          <h4>Specificity</h4>
-          <p>Messages lean on real prices, source names, metric deltas, appointment slots, and category-safe detail.</p>
-          <div class="rail"><span style="width:90%"></span></div>
-        </div>
-        <div class="insight-card">
-          <h4>Merchant Fit</h4>
-          <ul>
-            <li>Uses live offers when present</li>
-            <li>Adapts to city, locality, and behavior</li>
-            <li>Shifts voice by vertical</li>
-          </ul>
-        </div>
-        <div class="insight-card">
-          <h4>Replay Safety</h4>
-          <ul>
-            <li>Detects auto-replies</li>
-            <li>Ends hostile threads immediately</li>
-            <li>Moves to action after positive intent</li>
-          </ul>
-        </div>
-        <div class="insight-card">
-          <h4>Judge Mode</h4>
-          <p>Live structured context for the active scenario.</p>
-          <div class="context-grid">
-            <div class="context-box">
-              <h5>Category</h5>
-              <pre id="judgeCategory">Choose a scenario</pre>
-            </div>
-            <div class="context-box">
-              <h5>Merchant</h5>
-              <pre id="judgeMerchant">Choose a scenario</pre>
-            </div>
-            <div class="context-box">
-              <h5>Trigger</h5>
-              <pre id="judgeTrigger">Choose a scenario</pre>
-            </div>
-            <div class="context-box">
-              <h5>Customer</h5>
-              <pre id="judgeCustomer">Choose a scenario</pre>
-            </div>
-          </div>
-        </div>
-        <p class="footer-note">Judge-facing endpoints still live under <code>/v1/*</code>. This page is a product-style preview layered on top of the same deterministic engine.</p>
-      </aside>
-    </div>
-  </div>
+  </main>
+
   <script>
     const state = { scenarios: [], activeScenario: null, conversationId: null, view: "merchant" };
 
@@ -1521,69 +1015,88 @@ def render_homepage() -> str:
       messages: document.getElementById("messages"),
       scenarioTitle: document.getElementById("scenarioTitle"),
       scenarioSubtitle: document.getElementById("scenarioSubtitle"),
-      metaTags: document.getElementById("metaTags"),
       chips: document.getElementById("chips"),
       replyBox: document.getElementById("replyBox"),
       sendBtn: document.getElementById("sendBtn"),
-      engineLabel: document.getElementById("engineLabel"),
-      phoneBadge: document.getElementById("phoneBadge"),
       rawPayload: document.getElementById("rawPayload"),
       drawerBody: document.getElementById("drawerBody"),
       drawerState: document.getElementById("drawerState"),
       drawerToggle: document.getElementById("drawerToggle"),
-      copyPayload: document.getElementById("copyPayload"),
-      judgeCategory: document.getElementById("judgeCategory"),
-      judgeMerchant: document.getElementById("judgeMerchant"),
-      judgeTrigger: document.getElementById("judgeTrigger"),
-      judgeCustomer: document.getElementById("judgeCustomer"),
       themeToggle: document.getElementById("themeToggle"),
       merchantViewBtn: document.getElementById("merchantViewBtn"),
       customerViewBtn: document.getElementById("customerViewBtn"),
     };
 
-    function accentClass(accent) {
-      return `accent-${accent || "clinical"}`;
+    function addMessage(role, body) {
+      const row = document.createElement("div");
+      row.className = `message-row ${role}`;
+      
+      const content = document.createElement("div");
+      content.className = "message-content";
+      
+      if (role === "bot") {
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.textContent = "V";
+        content.appendChild(avatar);
+      }
+      
+      const bubbleWrap = document.createElement("div");
+      bubbleWrap.className = "bubble-wrap";
+      bubbleWrap.innerHTML = body;
+      
+      content.appendChild(bubbleWrap);
+      row.appendChild(content);
+      
+      els.messages.appendChild(row);
+      els.messages.scrollTop = els.messages.scrollHeight;
     }
 
-    function addMessage(role, body) {
-      const div = document.createElement("div");
-      div.className = `message ${role === "user" ? "user" : "bot"}`;
-      const small = role === "user" ? "merchant" : "vera";
-      div.innerHTML = `${body}<small>${small}</small>`;
-      els.messages.appendChild(div);
+    function showTyping() {
+      const row = document.createElement("div");
+      row.className = "message-row bot";
+      row.id = "typingBubble";
+      
+      const content = document.createElement("div");
+      content.className = "message-content";
+      
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = "V";
+      
+      const bubbleWrap = document.createElement("div");
+      bubbleWrap.className = "bubble-wrap";
+      
+      const typing = document.createElement("div");
+      typing.className = "typing";
+      typing.innerHTML = "<span></span><span></span><span></span>";
+      
+      bubbleWrap.appendChild(typing);
+      content.appendChild(avatar);
+      content.appendChild(bubbleWrap);
+      row.appendChild(content);
+      
+      els.messages.appendChild(row);
       els.messages.scrollTop = els.messages.scrollHeight;
+    }
+
+    function hideTyping() {
+      document.getElementById("typingBubble")?.remove();
     }
 
     function setRawPayload(payload) {
       els.rawPayload.textContent = JSON.stringify(payload || {}, null, 2);
     }
 
-    function setJudgeContext(rawContext) {
-      els.judgeCategory.textContent = JSON.stringify(rawContext?.category || {}, null, 2);
-      els.judgeMerchant.textContent = JSON.stringify(rawContext?.merchant || {}, null, 2);
-      els.judgeTrigger.textContent = JSON.stringify(rawContext?.trigger || {}, null, 2);
-      els.judgeCustomer.textContent = JSON.stringify(rawContext?.customer ?? null, null, 2);
-    }
-
     function applyViewFilter() {
       const wantCustomer = state.view === "customer";
-      document.querySelectorAll(".scenario").forEach((node, index) => {
+      document.querySelectorAll(".scenario-item").forEach((node, index) => {
         const scenario = state.scenarios[index];
         const shouldHide = wantCustomer ? scenario.scope !== "customer" : scenario.scope === "customer";
         node.classList.toggle("hidden-by-view", shouldHide);
       });
       els.merchantViewBtn.classList.toggle("active", state.view === "merchant");
       els.customerViewBtn.classList.toggle("active", state.view === "customer");
-    }
-
-    function setTags(tags) {
-      els.metaTags.innerHTML = "";
-      tags.forEach((tag) => {
-        const node = document.createElement("div");
-        node.className = "tag";
-        node.textContent = tag;
-        els.metaTags.appendChild(node);
-      });
     }
 
     function setChips(chips) {
@@ -1606,36 +1119,16 @@ def render_homepage() -> str:
       return response.json();
     }
 
-    function showTyping() {
-      const div = document.createElement("div");
-      div.className = "typing";
-      div.id = "typingBubble";
-      div.innerHTML = "<span></span><span></span><span></span>";
-      els.messages.appendChild(div);
-      els.messages.scrollTop = els.messages.scrollHeight;
-    }
-
-    function hideTyping() {
-      document.getElementById("typingBubble")?.remove();
-    }
-
     async function loadScenarios() {
       const data = await fetchJson("/demo/scenarios");
       state.scenarios = data.scenarios || [];
       els.scenarioList.innerHTML = "";
       state.scenarios.forEach((scenario, index) => {
         const button = document.createElement("button");
-        button.className = "scenario";
-        button.style.animationDelay = `${index * 70}ms`;
+        button.className = "scenario-item";
         button.innerHTML = `
-          <div class="scenario-head">
-            <div class="scenario-avatar" style="background:${scenario.avatar_gradient || "linear-gradient(135deg, #fb923c, #f97316)"}">${scenario.avatar || "V"}</div>
-            <div>
-              <div class="eyebrow"><span class="dot ${accentClass(scenario.accent)}"></span>${scenario.eyebrow}</div>
-              <strong>${scenario.label}</strong>
-            </div>
-          </div>
-          <p>${scenario.body_preview}</p>
+          <div class="title">${scenario.label}</div>
+          <div class="desc">${scenario.merchant_name}</div>
         `;
         button.onclick = () => openScenario(scenario.id);
         els.scenarioList.appendChild(button);
@@ -1653,19 +1146,15 @@ def render_homepage() -> str:
       });
       state.activeScenario = data.scenario;
       state.conversationId = data.conversation_id;
-      document.querySelectorAll(".scenario").forEach((node, index) => {
+      document.querySelectorAll(".scenario-item").forEach((node, index) => {
         node.classList.toggle("active", state.scenarios[index].id === id);
       });
       els.messages.innerHTML = "";
       addMessage("bot", data.message.body);
-      els.scenarioTitle.textContent = `${data.scenario.label} • ${data.scenario.merchant_name}`;
-      els.scenarioSubtitle.textContent = `Trigger: ${data.scenario.trigger_kind} • City: ${data.scenario.merchant_city} • Send-as: ${data.scenario.send_as}`;
-      els.engineLabel.textContent = data.message.cta || "open_ended";
-      els.phoneBadge.textContent = data.scenario.eyebrow.toLowerCase();
-      setTags([data.scenario.eyebrow, data.scenario.trigger_kind, data.scenario.send_as, data.message.cta]);
+      els.scenarioTitle.textContent = data.scenario.label;
+      els.scenarioSubtitle.textContent = `Trigger: ${data.scenario.trigger_kind} • Context: ${data.scenario.merchant_name}`;
       setChips(data.chips || []);
       setRawPayload(data.raw);
-      setJudgeContext(data.raw_context);
       els.replyBox.value = "";
     }
 
@@ -1674,6 +1163,8 @@ def render_homepage() -> str:
       if (!value || !state.conversationId) return;
       addMessage("user", value);
       els.replyBox.value = "";
+      els.replyBox.style.height = 'auto';
+      els.chips.innerHTML = "";
       showTyping();
       const data = await fetchJson("/demo/reply", {
         method: "POST",
@@ -1692,22 +1183,21 @@ def render_homepage() -> str:
         sendReply();
       }
     });
+    
+    els.replyBox.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
 
     els.drawerToggle.onclick = () => {
       const hidden = els.drawerBody.hasAttribute("hidden");
       if (hidden) {
         els.drawerBody.removeAttribute("hidden");
-        els.drawerState.textContent = "hide";
+        els.drawerState.textContent = "▲";
       } else {
         els.drawerBody.setAttribute("hidden", "");
-        els.drawerState.textContent = "show";
+        els.drawerState.textContent = "▼";
       }
-    };
-
-    els.copyPayload.onclick = async () => {
-      await navigator.clipboard.writeText(els.rawPayload.textContent);
-      els.copyPayload.textContent = "Copied";
-      setTimeout(() => { els.copyPayload.textContent = "Copy JSON"; }, 1200);
     };
 
     els.themeToggle.onclick = () => {
@@ -1958,6 +1448,19 @@ class VeraBotState:
                 "body": "Makes sense. Vera would wait 30 minutes before nudging again.",
                 "raw": {"action": "wait", "wait_seconds": 1800, "rationale": "User asked for time."},
             }
+        if contains_any(message, PROBLEM_PATTERNS) and not contains_any(message, POSITIVE_PATTERNS):
+            convo.last_turn += 1
+            offer = choose_active_offer(convo.merchant) or choose_catalog_offer(convo.category)
+            offer_title = offer.get("title") if offer else "a direct discount"
+            body = (
+                f"I hear you. When things slow down, a direct push works best. "
+                f"Let's promote '{offer_title}' to your top customers right now. Should I draft the campaign?"
+            )
+            return 200, {
+                "action": "send",
+                "body": body,
+                "raw": {"action": "send", "body": body, "cta": "open_ended", "rationale": "Addressed the merchant's stated problem directly."},
+            }
         if contains_any(message, POSITIVE_PATTERNS) or re.fullmatch(r"[12]", message):
             body = self._demo_follow_up(convo, message)
             return 200, {
@@ -1966,11 +1469,11 @@ class VeraBotState:
                 "raw": {"action": "send", "body": body, "cta": "open_ended", "rationale": "Positive intent detected."},
             }
         if contains_any(message, NEGATIVE_PATTERNS):
-            convo.ended = True
+            convo.last_turn += 1
             return 200, {
-                "action": "end",
-                "body": "No problem. Vera would close the loop and avoid further follow-up.",
-                "raw": {"action": "end", "rationale": "Negative response received."},
+                "action": "send",
+                "body": "No worries! We can pause this for now. Let me know if you want to try a different approach.",
+                "raw": {"action": "send", "rationale": "Negative response received, offering an alternative."},
             }
         body = self._demo_contextual_reply(convo, message)
         return 200, {
@@ -1980,22 +1483,28 @@ class VeraBotState:
         }
 
     def _demo_follow_up(self, convo: DemoConversation, message: str) -> str:
+        convo.last_turn += 1
+        if convo.last_turn > 2:
+            return "Got it. I'll make sure those details are included. Is there anything else you want to add or change?"
         if convo.scope == "customer" and re.fullmatch(r"[12]", message):
             slots = convo.trigger.get("payload", {}).get("available_slots", [])
             idx = int(message) - 1
             if 0 <= idx < len(slots):
-                return f"Perfect — I’ve noted {slots[idx].get('label')}. We’ll confirm that slot shortly."
+                return f"Perfect — I’ve noted {slots[idx].get('label')}. We’ll confirm that slot shortly. Need help with anything else?"
         if convo.composed.follow_up_body:
-            return convo.composed.follow_up_body
-        return "Done. Vera would move into the next concrete step here."
+            return convo.composed.follow_up_body + " Want me to finalize it?"
+        return "Done. I'll start drafting the campaign now. Want to review it once it's ready?"
 
     def _demo_contextual_reply(self, convo: DemoConversation, message: str) -> str:
+        convo.last_turn += 1
+        if convo.last_turn > 2:
+            return "Understood. I've updated the context with your preference. Any other specific instructions you have?"
         if convo.trigger.get("kind") == "curious_ask_due":
-            return f"Useful. Vera would turn '{message}' into a Google post plus a saved reply."
+            return f"Useful. I’ll turn '{message}' into a Google post plus a saved reply. Should I push it live?"
         if convo.scope == "customer":
-            return "Thanks. Vera would keep this easy and ask for the best time that works."
+            return "Thanks. I'll keep this easy and ask for the best time that works."
         greeting = merchant_display_name(convo.merchant, convo.category)
-        return f"Thanks, {greeting}. Vera would keep the next suggestion specific to '{message}' and move straight to action."
+        return f"Thanks, {greeting}. I'll keep the next suggestion specific to '{message}'. Ready to proceed?"
 
     def store_context(self, scope: str, context_id: str, version: int, payload: dict[str, Any], delivered_at: str) -> tuple[int, dict[str, Any]]:
         if scope not in self.contexts:
@@ -2171,6 +1680,22 @@ class VeraBotState:
             if convo:
                 convo.ended = True
             return 200, {"action": "end", "rationale": "Negative response received, so the bot exits cleanly without further nudges."}
+
+        if contains_any(message, PROBLEM_PATTERNS) and not contains_any(message, POSITIVE_PATTERNS):
+            if convo:
+                convo.last_turn = max(convo.last_turn, int(payload.get("turn_number", 1)))
+            merchant = self.get_payload("merchant", merchant_id)
+            category = self.get_payload("category", merchant.get("category_slug")) if merchant else {}
+            greeting = merchant_display_name(merchant or {}, category or {})
+            offer = choose_active_offer(merchant or {}) or choose_catalog_offer(category or {})
+            offer_title = offer.get("title") if offer else "a fast targeted offer"
+            body = (
+                f"I hear you, {greeting}. When things slow down, the most realistic fix is a direct push to your loyal base. "
+                f"Let's promote '{offer_title}' to your top 20% of past customers right now. Should I draft the campaign?"
+            )
+            if convo:
+                convo.ended = False
+            return 200, {"action": "send", "body": body, "cta": "open_ended", "rationale": "Addressed the merchant's stated problem directly with a concrete, realistic campaign proposal based on their catalog."}
 
         if convo:
             convo.last_turn = max(convo.last_turn, int(payload.get("turn_number", 1)))

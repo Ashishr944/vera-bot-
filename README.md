@@ -1,382 +1,82 @@
-# 🧠 Vera Message Engine — magicpin AI Challenge
+# 🧠 Vera Message Engine — ChatGPT-Style UI Edition
 
-## 🚀 Overview
+![Vera Bot Preview](https://via.placeholder.com/1200x600.png?text=Vera+Message+Engine+UI)
 
-This project implements a **deterministic message composition engine** for **Vera**, magicpin’s AI assistant for merchant growth.
+Vera is magicpin's AI assistant for merchant growth. This project implements a **deterministic message composition engine** coupled with a **premium, responsive ChatGPT-style web UI**. It acts as a Copilot to help merchants improve listings, run campaigns, and seamlessly handle customer engagement.
 
-Vera helps merchants:
+## ✨ Key Features
 
-* Improve listings
-* Run targeted campaigns
-* Re-engage customers
-* Respond intelligently to conversations
+### 🎨 Premium ChatGPT-Style Interface
+- **Immersive Chat Experience**: A modern, responsive two-column layout featuring a conversational feed.
+- **Micro-Animations**: Smooth message appearances and bouncing typing indicators.
+- **Glassmorphism & Dark Mode**: Sleek dark theme with light-mode toggles and frosted glass elements for a state-of-the-art aesthetic.
+- **Developer Credit**: Proudly built with an aesthetic focus by **Ashish Rokade**. All rights reserved.
 
----
+### 🤖 Intelligent Multi-Turn Conversations
+- **Dynamic Follow-Ups**: The bot doesn't just stop at one message. It actively remembers the turn number and pushes conversations forward intelligently.
+- **Problem Resolution Logic**: Capable of reading merchant intent (e.g. "my sales are down", "getting less traffic") and dynamically cross-referencing their catalog to propose a hyper-specific, direct campaign fix.
+- **Context-Aware Decisions**: Leverages categories, merchant metrics, triggers, and customer history.
 
-## 🎯 Objective
-
-Build a function:
-
-```
-compose(category, merchant, trigger, customer=None)
-```
-
-Which returns:
-
-* 📩 Next message
-* 🎯 CTA (Call To Action)
-* 👤 Send-as identity
-* 🔁 Suppression key
-* 🧠 Rationale
-
-All outputs must be:
-
-* Deterministic
-* Context-aware
-* High-engagement
-* Non-generic
+### ⚙️ Deterministic Evaluation
+- Designed specifically to pass the magicpin AI Challenge judge simulator.
+- Same input → same output (no randomness).
+- Fully validated via the built-in REST endpoints: `/v1/context`, `/v1/tick`, `/v1/reply`, `/v1/healthz`, and `/v1/metadata`.
 
 ---
 
-## 🧩 Key Features
+## 🚀 How to Run Locally
 
-### ✅ Deterministic Engine
+Running this project on any system is simple and fast. Follow these steps:
 
-Same input → same output (no randomness)
+### 1. Prerequisites
+Ensure you have **Python 3.9+** installed on your system.
 
-### ✅ Context-Aware Decisions
-
-Uses:
-
-* Category (tone & constraints)
-* Merchant (performance, offers)
-* Trigger (why message now)
-* Customer (optional personalization)
-
-### ✅ High-Compulsion Messaging
-
-* Uses **real numbers**
-* Includes **urgency**
-* Focuses on **one strong action**
-
-### ✅ Judge-Compatible API
-
-Fully implements required endpoints:
-
-* `/v1/healthz`
-* `/v1/metadata`
-* `/v1/context`
-* `/v1/tick`
-* `/v1/reply`
-
-### ✅ Smart Behaviors
-
-* Auto-reply detection
-* Intent transitions
-* Hostile message handling
-* Suppression logic
-
----
-
-## 🏗️ System Architecture
-
-```
-Incoming Context → Store → Trigger Event → compose() → Response
+### 2. Clone the Repository
+```bash
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
 ```
 
-### Flow:
-
-1. Context is pushed via `/v1/context`
-2. Stored by scope (category, merchant, etc.)
-3. Trigger arrives via `/v1/tick`
-4. `compose()` selects best signal
-5. Generates message + CTA
-6. Returns structured response
-
----
-
-## 🧠 Decision Strategy
-
-### 1. Signal Prioritization
-
-Only ONE dominant signal is used:
-
-* Demand spike
-* Performance drop
-* Customer recall
-* Seasonal trigger
-
----
-
-### 2. Message Construction
-
-Messages follow:
-
-```
-[Real Signal] + [Specific Data] + [Urgency] + [Action]
-```
-
-Example:
-
-```
-"190 people nearby searched for 'Dental Checkup' in last 2 hrs. Launch ₹299 offer today?"
-```
-
----
-
-### 3. Category Adaptation
-
-| Category    | Tone         |
-| ----------- | ------------ |
-| Dentists    | Clinical     |
-| Salons      | Visual       |
-| Restaurants | Tempting     |
-| Gyms        | Motivational |
-| Pharmacies  | Utility      |
-
----
-
-### 4. CTA Strategy
-
-Each message includes:
-
-* ONE clear action
-* Low friction
-* High intent
-
-Examples:
-
-* "Yes, launch now"
-* "Fix this today"
-* "Bring them back"
-
----
-
-### 5. Rationale
-
-Explains WHY message was chosen:
-
-```
-High search demand + merchant inactivity → strong conversion opportunity
-```
-
----
-
-## 📦 Project Structure
-
-```
-magicpin-ai-challenge/
-│
-├── vera_bot.py              # Main FastAPI bot
-├── judge_simulator.py       # Official judge
-├── requirements.txt
-├── Procfile
-├── runtime.txt
-├── README.md
-├── .env.local.example
-│
-├── dataset/
-├── examples/
-└── expanded/
-```
-
----
-
-## ⚙️ Setup Instructions
-
-### 🔹 1. Clone Project
-
-```
-git clone <https://github.com/Ashishr944/vera-bot->
-cd magicpin-ai-challenge
-```
-
----
-
-### 🔹 2. Install Dependencies
-
-```
+### 3. Install Dependencies
+Install the required packages using pip:
+```bash
 pip install -r requirements.txt
 ```
+*(Note: If you are using macOS with Homebrew Python, you may need to run `pip install -r requirements.txt --break-system-packages` or use a virtual environment).*
 
----
-
-### 🔹 3. Run Bot Locally
-
-```
+### 4. Start the Server
+Launch the Vera Message Engine locally:
+```bash
 python3 vera_bot.py --port 8080
 ```
 
----
-
-### 🔹 4. Verify Bot
-
+### 5. Access the Web Interface
+Open your favorite web browser and navigate to:
+```text
+http://localhost:8080
 ```
-curl http://localhost:8080/v1/healthz
-```
-
-Expected:
-
-```
-{"status": "ok"}
-```
+You will be greeted by the new ChatGPT-style interface. Click on "Customer" or "Merchant" on the left sidebar to toggle scenarios, and start chatting!
 
 ---
 
-## 🔐 Environment Setup
+## 🛠 Project Structure
 
-### Create `.env.local`
-
-```
-export BOT_URL="http://localhost:8080"
-export LLM_PROVIDER="openrouter"
-export LLM_MODEL="mistralai/mistral-7b-instruct"
-export LLM_API_KEY="YOUR_API_KEY"
-```
+- `vera_bot.py`: The core engine containing the `VeraComposer` class, the FastAPI/HTTP endpoints, the multi-turn conversational logic, and the embedded frontend UI.
+- `requirements.txt`: Python dependencies (`fastapi`, `uvicorn`, `pydantic`, etc.) needed to run the engine.
+- `dataset/`: Contains the seed data for categories, merchants, customers, and triggers used by the deterministic engine.
 
 ---
 
-### Load Environment
+## 🏆 magicpin AI Challenge Constraints Met
 
-```
-source .env.local
-```
-
----
-
-## 🧪 Run Judge Simulator
-
-```
-python3 judge_simulator.py
-```
+- **Decision Quality**: Selects the best specific action based on live merchant data.
+- **Specificity**: Injects precise numbers, catalog offers, and dates.
+- **Category & Merchant Fit**: Tailors its voice to the business type and historical conversions.
+- **Engagement Compulsion**: Pushes low-friction "yes/no" follow-ups.
 
 ---
 
-## 📊 Evaluation Criteria
-
-Each output is scored (0–10):
-
-| Metric           | Description           |
-| ---------------- | --------------------- |
-| Decision Quality | Best signal selection |
-| Specificity      | Real data usage       |
-| Category Fit     | Tone alignment        |
-| Merchant Fit     | Personalization       |
-| Engagement       | Likelihood to reply   |
-
----
-
-## 🌐 Deployment (Render)
-
-### 1. Push to GitHub
-
-```
-git add .
-git commit -m "final"
-git push
-```
-
----
-
-### 2. Deploy on Render
-
-* Create Web Service
-* Connect repo
-
-**Build Command:**
-
-```
-pip install -r requirements.txt
-```
-
-**Start Command:**
-
-```
-uvicorn vera_bot:app --host 0.0.0.0 --port $PORT
-```
-
----
-
-### 3. Add Environment Variables
-
-* BOT_URL
-* LLM_PROVIDER
-* LLM_MODEL
-* LLM_API_KEY
-
----
-
-### 4. Get Public URL
-
-```
-https://your-app.onrender.com
-```
-
----
-
-## 🧪 Test Live Bot
-
-```
-https://your-app.onrender.com/v1/healthz
-```
-
----
-
-## 🧠 Design Philosophy
-
-### 🔹 Deterministic > Creative
-
-Consistency is more important than randomness
-
-### 🔹 One Strong Idea
-
-Avoid multiple weak suggestions
-
-### 🔹 Specific > Generic
-
-Numbers and facts outperform vague messaging
-
-### 🔹 Action > Information
-
-Every message must drive action
-
----
-
-## ⚠️ Constraints
-
-* No fake claims
-* One CTA per message
-* Must remain deterministic
-* Respect session rules
-
----
-
-## 📈 Example Output
-
-```json
-{
-  "message": "190 people nearby searched for 'Dental Checkup'. Launch ₹299 offer today?",
-  "cta": "Yes, launch now",
-  "send_as": "assistant",
-  "suppression_key": "demand_spike_dental",
-  "rationale": "High search demand + inactive merchant"
-}
-```
-
----
-
-## 👨‍💻 Author
-
-Ashu Rokade
-
----
-
-## 🏁 Submission Checklist
-
-* ✅ Bot runs locally
-* ✅ Judge passes all tests
-* ✅ Public URL deployed
-* ✅ README included
-* ✅ Deterministic outputs
-
----
+<div align="center">
+  <b>Developer: Ashish Rokade</b> <br>
+  &copy; All rights reserved.
+</div>
