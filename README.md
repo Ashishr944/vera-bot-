@@ -1,6 +1,6 @@
 # 🧠 Vera Message Engine — ChatGPT-Style UI Edition
 
-![Vera Bot Preview][(https://via.placeholder.com/1200x600.png?text=Vera+Message+Engine+UI](https://vera-message-engine-tw2u.onrender.com))
+![Vera Bot Preview][(https://vera-message-engine-tw2u.onrender.com](https://vera-message-engine-tw2u.onrender.com))
 
 Vera is magicpin's AI assistant for merchant growth. This project implements a **deterministic message composition engine** coupled with a **premium, responsive ChatGPT-style web UI**. It acts as a Copilot to help merchants improve listings, run campaigns, and seamlessly handle customer engagement.
 
